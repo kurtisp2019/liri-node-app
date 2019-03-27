@@ -85,6 +85,8 @@ function findABand(_artistName) {
 
 function findASong(_songName) {
 
+    if (_songName === null || _songName === "")
+        _songName = "The Sign";
     spotify.search(
         {
             type: 'track',
@@ -184,6 +186,9 @@ function findASong(_songName) {
     
 
 function findAMovie(_movieName) {
+    if (_movieName === null || _movieName === "")
+        _movieName = "Mr. Nobody";
+    
     var omdbQS = "https://www.omdbapi.com/?t=" + _movieName + "&tomatoes=true&plot=short&apikey=trilogy";
 
     axios.get(omdbQS).then(function (_response) {
