@@ -50,7 +50,7 @@ else if (process.argv[2] === "do-what-it-says") {
 }
 
 function findABand(_artistName) {
-    debugger
+    
     var bandsInTownQS = "https://rest.bandsintown.com/artists/" + _artistName + "/events?app_id=codingbootcamp";
 
     axios.get(bandsInTownQS).then(function (_response) {
