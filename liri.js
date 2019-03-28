@@ -4,7 +4,7 @@
  * 
  */
 
-
+// reqquires
 require("dotenv").config();
 var keys = require("./keys.js");
 var Spotify = require('node-spotify-api');
@@ -14,9 +14,13 @@ var axios = require("axios");
 var fs = require("fs");
 
 //var spotify = new Spotify(keys.spotify);
-var searchQuery = process.argv[3];
 
+// Value passed in by the user to search with
+var searchQuery = process.argv.splice(3).join(" ");
 
+/************************************************************************* */
+/**     Check to see what action the user wants to perform                */
+/************************************************************************* */
 if (process.argv[2] === "concert-this") {
     findABand(searchQuery);
 
@@ -33,7 +37,6 @@ else if (process.argv[2] === "do-what-it-says") {
     fs.readFile("random.txt", "utf-8", function (error, data) {
         var contents = data.split(',');
 
-        debugger
         for (var i = 0; i < contents.length-1; ++i) {
 
             if (contents[i] === "concert-this") {
@@ -49,13 +52,29 @@ else if (process.argv[2] === "do-what-it-says") {
     });
 }
 
+
+
+/************************************************************************* */
+/**     name:       findABand                                              */
+/*                                                                         */
+/**     parameters: _artistName, used to search for an artist or band      */
+/*                  by their name.                                         */
+/*                                                                         */ 
+/*      return:     none.                                                  */
+/*                                                                         */      
+/*      purpose:    query the bands in town website for data by band       */
+/*                  name or artist name.                                   */                                                                     
+/************************************************************************* */
 function findABand(_artistName) {
     
+    // create the bands in town query string
     var bandsInTownQS = "https://rest.bandsintown.com/artists/" + _artistName + "/events?app_id=codingbootcamp";
 
+    // use axios to get data from the bandsintown website based on an artist name
     axios.get(bandsInTownQS).then(function (_response) {
         
 
+        // loop through the repsonses data and display the data to the console
         for (var i = 0; i < _response.data.length; ++i) {
           
             console.log("---------------------------------------------------------------------------");
@@ -74,7 +93,7 @@ function findABand(_artistName) {
                 
         }
 
-        debugger
+        
     }).catch(function (e) {
         console.log(e);
     });
@@ -83,10 +102,23 @@ function findABand(_artistName) {
 
 }
 
+/************************************************************************* */
+/*      name:       findASong                                              */
+/*                                                                         */
+/*      parameters: _songName, used to search for an song by name.         */
+/*                                                                         */ 
+/*      return:     none.                                                  */
+/*                                                                         */      
+/*      purpose:    query spotify for data based on a song name.           */ 
+/************************************************************************* */
 function findASong(_songName) {
 
+    // if the _songName is null or is not set to anything
+    //  default to The Sign
     if (_songName === null || _songName === "")
         _songName = "The Sign";
+    
+    // search spotify for data based on the song passed in (_songName)
     spotify.search(
         {
             type: 'track',
@@ -110,87 +142,35 @@ function findASong(_songName) {
             console.log("---------------------------------------------------------------------------");
            
 
+    // if something goes wrong, the program will be thrown to here
     }).catch(function (e) {
         console.log("An error occured in findABand");
     });
 }
     
         
-        // almost had it working without the API lololololololololololoolololool
-        // var request = require('request'); // "Request" library
-
-        // var client_id = 'CLIENT_ID'; // Your client id
-        // var client_secret = 'CLIENT_SECRET'; // Your secret
-
-        // // your application requests authorization
-        // var authOptions = {
-        //     url: 'https://accounts.spotify.com/api/token',
-        //     headers: {
-        //         'Authorization': 'Basic ' + (new Buffer(keys.spotify.id + ':' + keys.spotify.secret).toString('base64'))
-        //     },
-        //     form: {
-        //         grant_type: 'client_credentials'
-        //     },
-        //     json: true
-        // };
-
-        // request.post(authOptions, function (error, response, body) {
-        
-        //     console.log(keys.spotify.id);
-        //     console.log(keys.spotify.secret);
-        //     if (!error && response.statusCode === 200) {
-
-            
-        //         // use the access token to access the Spotify Web API
-        //         var token = body.access_token;
-            
-        //         var options = {
-        //             url: 'https://api.spotify.com/v1/tracks/vibyl',
-        //             headers: {
-        //                 'Authorization': 'Bearer ' + token
-        //             },
-        //             json: true
-        //         };
-        //         request.get(options, function (error, response, body) {
-        //             console.log(body);
-        //         });
-        //     }
-        // });
+  
     
-        // authorize the user/client
-        // const authEndpoint = "https://accounts.spotify.com/api/token";
-
-        // var authOptions = {
-        //       authorization: 'Basic ' + (keys.spotify.id + ':' + keys.spotify.secret).toString() ,    
-        //       grant_type: 'client_credentials'
-
-        // };
-    
-        // axios.post(authEndpoint, authOptions).then(function () {
-        //     console.log(accessToken);
-        //     console.log("ok");
-        // }).catch(function (e) {
-        //     console.log(e);
-        //     console.log("something went wrong");
-        // });
-
-        // var spotifyQS = "https://api.spotify.com/v1/search?q="+ _songName +"&type=artist";
-        // axios.get(spotifyQS).then(function (_response) { 
-        //     console.log(_response.data[0]);
-        
-        // }).catch(function (e) {
-       
-        //     console.log(e);
-        // });
-
-    
-
+/************************************************************************* */
+/*      name:       findAMovie                                              */
+/*                                                                         */
+/*      parameters: _movieName, used to search for an movie by name.       */
+/*                                                                         */ 
+/*      return:     none.                                                  */
+/*                                                                         */      
+/*      purpose:    query omdb for movie data based on a movie name        */
+/************************************************************************* */
 function findAMovie(_movieName) {
+
+    // if the _moviename is null or is not set to anything
+    //  default to Mr.Nobody
     if (_movieName === null || _movieName === "")
         _movieName = "Mr. Nobody";
     
+    // create the query string
     var omdbQS = "https://www.omdbapi.com/?t=" + _movieName + "&tomatoes=true&plot=short&apikey=trilogy";
 
+    // query omdb for movie data
     axios.get(omdbQS).then(function (_response) {
         console.log("---------------------------------------------------------------------------");
             
